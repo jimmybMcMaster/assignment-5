@@ -8,6 +8,10 @@
     "module": "es2022",
     "target": "es2022",
 
+     /*tsoa */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
