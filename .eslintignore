@@ -1,1 +1,5 @@
 .eslintrc.js
+
+# tsoa generated files
+/src/docs/
+/src/routes/generated/
