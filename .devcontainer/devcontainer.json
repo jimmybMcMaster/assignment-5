@@ -8,7 +8,8 @@
   ],
   "service": "dev",
   "features": {
-    "ghcr.io/mcmastercce/bvd-103-mcmasterful-books/mcmasterful-books:0.1.5": {}
+    "ghcr.io/mcmastercce/bvd-103-mcmasterful-books/mcmasterful-books:0.1.5": {},
+    "ghcr.io/devcontainers/features/java": {}
   },
   // Uncomment workspaceFolder if the repo has been cloned to your local machine
   // "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",

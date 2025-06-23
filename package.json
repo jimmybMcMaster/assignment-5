@@ -4,10 +4,10 @@
   "description": "This is a template repository for the first assignment in BVD 103 at McMaster Continuing Education.",
   "main": "index.ts",
   "scripts": {
-    "start-server": "tsx ./index.ts",
-    "lint": "eslint ./**/*.ts",
-    "fix-lint": "eslint --fix ./**/*.ts",
-    "check-types": "tsc --noEmit",
+    "start-server": "./generate-openapi.sh && tsx ./index.ts",
+    "lint": "./generate-openapi.sh && eslint ./**/*.ts",
+    "fix-lint": "./generate-openapi.sh && eslint --fix ./**/*.ts",
+    "check-types": "./generate-openapi.sh && tsc --noEmit",
     "test": "vitest",
     "test:ci": "vitest run"
   },
