@@ -1,6 +1,6 @@
 import { ObjectId } from 'mongodb'
-import { type BookID } from '../../adapter/assignment-2'
-import { type OrderId, type ShelfId } from '../../adapter/assignment-4'
+import { type BookID } from '../../../adapter/assignment-2'
+import { type OrderId, type ShelfId } from '../../../adapter/assignment-4'
 import { getDefaultWarehouseDatabase } from './warehouse_database'
 
 export interface WarehouseData {
