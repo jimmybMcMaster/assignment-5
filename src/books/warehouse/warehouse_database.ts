@@ -1,8 +1,8 @@
 import { ObjectId, type Collection, type Db } from 'mongodb'
-import { type BookID, type OrderId, type ShelfId } from '../../adapter/assignment-4'
-import { client } from '../database_access'
+import { type BookID, type OrderId, type ShelfId } from '../../../adapter/assignment-4'
+import { client } from '../../database_access'
 import { type WarehouseData, InMemoryWarehouse } from './warehouse_data'
-import { generateId, seedWarehouseDatabase } from '../../database_test_utilities'
+import { generateId, seedWarehouseDatabase } from '../../../database_test_utilities'
 
 export interface WarehouseDatabaseAccessor {
   database: Db
@@ -130,6 +130,7 @@ if (import.meta.vitest !== undefined) {
     const dbData = new DatabaseWarehouse(db)
 
     const [memOrderId, dbOrderId] = await Promise.all([memData.placeOrder({ book: 2 }), dbData.placeOrder({ book: 2 })])
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     const [memOrder, dbOrder] = await Promise.all([memData.getOrder(memOrderId), dbData.getOrder(dbOrderId)])
 
     expect(memOrder).toMatchObject(dbOrder)
@@ -144,7 +145,9 @@ if (import.meta.vitest !== undefined) {
     expect(memList.length).toEqual(dbList.length)
     expect(dbList.length).toEqual(2)
 
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await Promise.all([memData.removeOrder(memOrderId), dbData.removeOrder(dbOrderId)])
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     await Promise.all([memData.removeOrder(memOrderId2), dbData.removeOrder(dbOrderId2)])
 
     const [memList2, dbList2] = await Promise.all([memData.listOrders(), dbData.listOrders()])
