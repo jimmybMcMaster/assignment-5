@@ -15,8 +15,8 @@ export function useTestServer (): TestContext {
 
   let server: Server
 
-  beforeEach(() => {
-    server = createServer(0)
+  beforeEach(async () => {
+    server = await createServer(0, true)
     const { port } = server.address() as { port: number }
     ctx.address = `http://localhost:${port}`
     ctx.close = () => server.close()
