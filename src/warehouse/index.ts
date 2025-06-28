@@ -4,16 +4,17 @@ import { placeOrderRouter } from './place_order'
 import { listOrdersRouter } from './list_orders'
 import { getBookInfoRouter } from './get_book_info'
 import { fulfilOrderRouter } from './fulfil_order'
+import { type WarehouseData } from './warehouse_data'
 
-export function setupWarehouseRoutes (router: ZodRouter): void {
+export function setupWarehouseRoutes (router: ZodRouter, warehouse: WarehouseData): void {
   // Placing Books on Shelves
-  placeBooksOnShelfRouter(router)
+  placeBooksOnShelfRouter(router, warehouse)
 
-  placeOrderRouter(router)
+  placeOrderRouter(router, warehouse)
 
-  listOrdersRouter(router)
+  listOrdersRouter(router, warehouse)
 
-  getBookInfoRouter(router)
+  getBookInfoRouter(router, warehouse)
 
-  fulfilOrderRouter(router)
+  fulfilOrderRouter(router, warehouse)
 }

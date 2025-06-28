@@ -1,6 +1,6 @@
 import { type ZodRouter } from 'koa-zod-router'
 import { type BookID, type OrderId } from '../../adapter/assignment-4'
-import { InMemoryWarehouse, type WarehouseData, getDefaultWarehouseData } from './warehouse_data'
+import { InMemoryWarehouse, type WarehouseData } from './warehouse_data'
 import { z } from 'zod'
 
 async function placeOrder (data: WarehouseData, books: BookID[]): Promise<OrderId> {
@@ -13,7 +13,7 @@ async function placeOrder (data: WarehouseData, books: BookID[]): Promise<OrderI
   return await data.placeOrder(order)
 }
 
-export function placeOrderRouter (router: ZodRouter): void {
+export function placeOrderRouter (router: ZodRouter, warehouse: WarehouseData): void {
   router.register({
     name: 'place an order',
     method: 'post',
@@ -27,7 +27,7 @@ export function placeOrderRouter (router: ZodRouter): void {
       const books: BookID[] = ctx.request.body.order
 
       try {
-        const result = await placeOrder(await getDefaultWarehouseData(), books)
+        const result = await placeOrder(warehouse, books)
         ctx.body = result
         ctx.status = 201
         return await next()

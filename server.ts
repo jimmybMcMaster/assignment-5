@@ -40,7 +40,7 @@ export async function createServer (
 
   const router = zodRouter({ zodRouter: { exposeRequestErrors: true } })
   setupBookRoutes(router, state.books)
-  setupWarehouseRoutes(router)
+  setupWarehouseRoutes(router, state.warehouse)
   app.use(router.routes())
 
   const tsoaRouter = new Router()
