@@ -9,10 +9,30 @@ import { RegisterRoutes } from './src/routes/generated/routes'
 import * as swagger from './src/docs/swagger.json'
 import { setupBookRoutes } from './src/books'
 import { setupWarehouseRoutes } from './src/warehouse'
+import { getBookDatabase } from './src/database_access'
+import { getDefaultWarehouseDatabase } from './src/warehouse/warehouse_database'
+import { type AppBookDatabaseState, type AppWarehouseDatabaseState } from './src/app/state'
 import { type Server, type IncomingMessage, type ServerResponse } from 'http'
 
-export function createServer (port: number = 0): Server<typeof IncomingMessage, typeof ServerResponse> {
-  const app = new Koa()
+export async function createServer (
+  port: number = 0,
+  randomizeDbName = false
+): Promise<Server<typeof IncomingMessage, typeof ServerResponse>> {
+  const app = new Koa<AppBookDatabaseState & AppWarehouseDatabaseState>()
+
+  const bookDbName = randomizeDbName ? Math.floor(Math.random() * 100000).toString() : 'mcmasterful-books'
+  const warehouseDbName = randomizeDbName ? Math.floor(Math.random() * 100000).toString() : 'mcmasterful-warehouse'
+
+  const state: AppBookDatabaseState & AppWarehouseDatabaseState = {
+    books: getBookDatabase(bookDbName),
+    warehouse: await getDefaultWarehouseDatabase(warehouseDbName)
+  }
+
+  // Inject state into Koa context
+  app.use(async (ctx, next) => {
+    ctx.state = state
+    await next()
+  })
 
   qs(app)
   app.use(cors())
