@@ -68,6 +68,6 @@ export class InMemoryWarehouse implements WarehouseData {
   }
 }
 
-export async function getDefaultWarehouseData (): Promise<WarehouseData> {
-  return await getDefaultWarehouseDatabase()
+export async function getDefaultWarehouseData (name?: string): Promise<WarehouseData> {
+  return await getDefaultWarehouseDatabase(name)
 }
