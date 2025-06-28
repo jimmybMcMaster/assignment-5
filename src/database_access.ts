@@ -18,8 +18,10 @@ export interface BookDatabaseAccessor {
   books: Collection<Book>
 }
 
-export function getBookDatabase (): BookDatabaseAccessor {
-  const database = client.db((global as any).MONGO_URI !== undefined ? Math.floor(Math.random() * 100000).toPrecision() : 'mcmasterful-books')
+export function getBookDatabase (dbName?: string): BookDatabaseAccessor {
+  const database = client.db(
+    dbName ?? Math.floor(Math.random() * 100000).toPrecision().toString()
+  )
   const books = database.collection<Book>('books')
 
   return {
