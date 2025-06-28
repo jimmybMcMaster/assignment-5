@@ -1,9 +1,9 @@
 import { z } from 'zod'
 import { type Book } from '../../adapter/assignment-2'
 import { type ZodRouter } from 'koa-zod-router'
-import { getBookDatabase } from '../database_access'
+import { type BookDatabaseAccessor } from '../database_access'
 
-export default function booksList (router: ZodRouter): void {
+export default function booksList (router: ZodRouter, books: BookDatabaseAccessor): void {
   router.register({
     name: 'list books',
     method: 'get',
@@ -19,7 +19,7 @@ export default function booksList (router: ZodRouter): void {
       })
     },
     handler: async (ctx, next) => {
-      const { books: bookCollection } = getBookDatabase()
+      const bookCollection = books.books
       const { filters } = ctx.request.query
 
       const validFilters = filters?.filter(({ from, to, name, author }) =>

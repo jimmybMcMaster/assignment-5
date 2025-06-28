@@ -25,7 +25,7 @@ async function getBook (id: BookID, { books }: BookDatabaseAccessor): Promise<Bo
   return book
 }
 
-export default function getBookRoute (router: ZodRouter): void {
+export default function getBookRoute (router: ZodRouter, books: BookDatabaseAccessor): void {
   router.register({
     name: 'get book',
     method: 'get',
@@ -38,7 +38,7 @@ export default function getBookRoute (router: ZodRouter): void {
     handler: async (ctx, next) => {
       const { id } = ctx.request.params
 
-      const result = await getBook(id, getBookDatabase())
+      const result = await getBook(id, books)
 
       if (result === false) {
         ctx.status = 404

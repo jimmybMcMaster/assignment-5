@@ -39,7 +39,7 @@ export async function createServer (
   app.use(bodyParser())
 
   const router = zodRouter({ zodRouter: { exposeRequestErrors: true } })
-  setupBookRoutes(router)
+  setupBookRoutes(router, state.books)
   setupWarehouseRoutes(router)
   app.use(router.routes())
 
