@@ -157,10 +157,6 @@ if (import.meta.vitest !== undefined) {
   })
 }
 
-/* export async function getDefaultWarehouseDatabase (): Promise<WarehouseData> {
-  const db = await getWarehouseDatabase()
-  return new DatabaseWarehouse(db)
-} */
 export async function getDefaultWarehouseDatabase (name?: string): Promise<WarehouseData> {
   const db = await getWarehouseDatabase(name)
   return new DatabaseWarehouse(db)
