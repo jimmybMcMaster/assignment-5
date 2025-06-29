@@ -2,14 +2,48 @@ import { Controller, Get, Path, Post, Route, Request, SuccessResponse, Delete, B
 import { ObjectId } from 'mongodb'
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { type BookDatabaseAccessor } from '../database_access'
-import { type BookID, type Book, type Filter } from '../../adapter/assignment-4'
+import { type BookID, type Book } from '../../adapter/assignment-4'
 import { type DefaultContext, type ParameterizedContext, type Request as KoaRequest } from 'koa'
 import { type AppBookDatabaseState } from '../app/state'
 
+/**
+ * Controller for managing books.
+ * Example:
+ *
+ * const cheapBook = {
+ *   name: 'Cheap Book',
+ *   author: 'Cheap Author',
+ *   description: 'A cheap book',
+ *   price: 3,
+ *   image: 'url'
+ * }
+ *
+ * const middleBook = {
+ *   name: 'Middle Book',
+ *   author: 'Middle Author',
+ *   description: 'A middle book',
+ *   price: 13,
+ *   image: 'url'
+ * }
+ *
+ * const expensiveBook = {
+ *   name: 'Expensive Book',
+ *   author: 'Expensive Author',
+ *   description: 'An expensive book',
+ *   price: 30,
+ *   image: 'url'
+ * }
+ */
 @Route('books')
 export class BooksController extends Controller {
   /**
    * Look up a single book by its ID.
+   * Example:
+   * GET /books/{id}
+   *
+   * @param id - The ID of the book to retrieve.
+   * @param request - The Koa request object.
+   * @returns The book with the given ID or undefined if not found.
    */
   @Get('{id}')
   @SuccessResponse('200', 'Book Found')
@@ -39,17 +73,32 @@ export class BooksController extends Controller {
 
   /**
    * List all books, with optional filtering by price, name, or author.
+   * Example:
+   * GET /books?from=10&to=50&name=Middle
+   *
+   * @param request - The Koa request object.
+   * @param from - Optional filter for from price range.
+   * @param to - Optional filter for to price range.
+   * @param name - Optional filter for book name.
+   * @param author - Optional filter for book author.
+   * @returns A list of books matching the filters.
    */
   @Get()
   @SuccessResponse('200', 'List Returned')
   public async listBooks (
     @Request() request: KoaRequest,
-      @Query() filters?: Filter[]
+      @Query() from?: number,
+      @Query() to?: number,
+      @Query() name?: string,
+      @Query() author?: string
   ): Promise<Book[]> {
     const ctx = request.ctx as ParameterizedContext<AppBookDatabaseState, DefaultContext>
     const { books } = ctx.state
 
-    const validFilters = (filters ?? []).filter(({ from, to, name, author }) =>
+    // Filter out invalid or empty filters
+    const validFilters = [
+      { from, to, name, author }
+    ].filter(({ from, to, name, author }) =>
       typeof from === 'number' ||
       typeof to === 'number' ||
       (typeof name === 'string' && name.trim().length > 0) ||
@@ -84,6 +133,12 @@ export class BooksController extends Controller {
 
   /**
    * Create or update a book.
+   * Example:
+   * POST /books
+   *
+   * @param body - The book object to create or update.
+   * @param request - The Koa request object.
+   * @returns The ID of the created or updated book.
    */
   @Post()
   @SuccessResponse('201', 'Created or Updated')
@@ -134,6 +189,12 @@ export class BooksController extends Controller {
 
   /**
    * Delete a book by its ID.
+   * Example:
+   * DELETE /books/{id}
+   *
+   * @param id - The ID of the book to delete.
+   * @param request - The Koa request object.
+   * @returns Nothing. Status is set according to whether the book was deleted.
    */
   @Delete('{id}')
   @SuccessResponse('200', 'Book Deleted')
