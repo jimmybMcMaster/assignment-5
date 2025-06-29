@@ -1,10 +1,10 @@
 import { type BookDatabaseAccessor } from '../database_access'
-import { type WarehouseData } from '../warehouse/warehouse_data'
+import { type DatabaseWarehouse } from '../warehouse/warehouse_database'
 
 export interface AppBookDatabaseState {
   books: BookDatabaseAccessor
 }
 
 export interface AppWarehouseDatabaseState {
-  warehouse: WarehouseData
+  warehouse: DatabaseWarehouse
 }
