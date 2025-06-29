@@ -1,16 +1,13 @@
 import Koa from 'koa'
 import cors from '@koa/cors'
-import zodRouter from 'koa-zod-router'
 import qs from 'koa-qs'
 import Router from '@koa/router'
 import { koaSwagger } from 'koa2-swagger-ui'
 import bodyParser from 'koa-bodyparser'
 import { RegisterRoutes } from './src/routes/generated/routes'
 import * as swagger from './src/docs/swagger.json'
-import { setupBookRoutes } from './src/books'
-import { setupWarehouseRoutes } from './src/warehouse'
 import { getBookDatabase } from './src/database_access'
-import { getDefaultWarehouseDatabase } from './src/warehouse/warehouse_database'
+import { DatabaseWarehouse, getWarehouseDatabase } from './src/warehouse/warehouse_database'
 import { type AppBookDatabaseState, type AppWarehouseDatabaseState } from './src/app/state'
 import { type Server, type IncomingMessage, type ServerResponse } from 'http'
 
@@ -25,7 +22,7 @@ export async function createServer (
 
   const state: AppBookDatabaseState & AppWarehouseDatabaseState = {
     books: getBookDatabase(bookDbName),
-    warehouse: await getDefaultWarehouseDatabase(warehouseDbName)
+    warehouse: new DatabaseWarehouse(await getWarehouseDatabase(warehouseDbName))
   }
 
   // Inject state into Koa context
@@ -37,11 +34,6 @@ export async function createServer (
   qs(app)
   app.use(cors())
   app.use(bodyParser())
-
-  const router = zodRouter({ zodRouter: { exposeRequestErrors: true } })
-  setupBookRoutes(router, state.books)
-  setupWarehouseRoutes(router, state.warehouse)
-  app.use(router.routes())
 
   const tsoaRouter = new Router()
   RegisterRoutes(tsoaRouter)
