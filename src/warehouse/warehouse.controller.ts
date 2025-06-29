@@ -6,7 +6,9 @@ import { type AppWarehouseDatabaseState } from '../app/state'
 @Route('warehouse')
 export class WarehouseController extends Controller {
   /**
-   * Get a list of shelves and how many copies of the book are on each.
+   * Get a list of shelves and how many copies of a book are on each.
+   *
+   * @example book "cheapBook"
    */
   @Get('{book}')
   @SuccessResponse('200', 'Book Found')
@@ -15,8 +17,7 @@ export class WarehouseController extends Controller {
     @Path() book: BookID,
       @Request() request: KoaRequest
   ): Promise<Record<ShelfId, number>> {
-    const ctx = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
-    const warehouse = ctx.state.warehouse
+    const { warehouse } = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
 
     const copies = await warehouse.getCopies(book)
     const response: Record<ShelfId, number> = {}
@@ -33,6 +34,10 @@ export class WarehouseController extends Controller {
 
   /**
    * Place books on a shelf.
+   *
+   * @example book "middleBook"
+   * @example shelf "A1"
+   * @example number 3
    */
   @Put('{book}/{shelf}/{number}')
   @SuccessResponse('200', 'Books Placed')
@@ -42,8 +47,7 @@ export class WarehouseController extends Controller {
       @Path() number: number,
       @Request() request: KoaRequest
   ): Promise<void> {
-    const ctx = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
-    const warehouse = ctx.state.warehouse
+    const { warehouse } = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
 
     if (number < 0) {
       throw new Error("Can't place less than 0 books on a shelf")
@@ -55,6 +59,8 @@ export class WarehouseController extends Controller {
 
   /**
    * Place an order for one or more books.
+   *
+   * @example body { "order": ["cheapBook", "expensiveBook", "cheapBook"] }
    */
   @Post('order')
   @SuccessResponse('201', 'Order Placed')
@@ -62,8 +68,7 @@ export class WarehouseController extends Controller {
     @Body() body: { order: BookID[] },
       @Request() request: KoaRequest
   ): Promise<OrderId> {
-    const ctx = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
-    const warehouse = ctx.state.warehouse
+    const { warehouse } = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
 
     const order: Record<BookID, number> = {}
 
@@ -71,7 +76,7 @@ export class WarehouseController extends Controller {
       order[book] = 1 + (order[book] ?? 0)
     }
 
-    return await warehouse.placeOrder(order)
+    return warehouse.placeOrder(order)
   }
 
   /**
@@ -82,14 +87,18 @@ export class WarehouseController extends Controller {
   public async listOrders (
     @Request() request: KoaRequest
   ): Promise<Array<{ orderId: OrderId, books: Record<BookID, number> }>> {
-    const ctx = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
-    const warehouse = ctx.state.warehouse
-
-    return await warehouse.listOrders()
+    const { warehouse } = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
+    return warehouse.listOrders()
   }
 
   /**
    * Fulfil an order by removing books from shelves.
+   *
+   * @example order "exampleOrder123"
+   * @example booksFulfilled [
+   *   { "book": "cheapBook", "shelf": "A1", "numberOfBooks": 2 },
+   *   { "book": "expensiveBook", "shelf": "B2", "numberOfBooks": 1 }
+   * ]
    */
   @Put('fulfil/{order}')
   @SuccessResponse('200', 'Order Fulfilled')
@@ -98,8 +107,7 @@ export class WarehouseController extends Controller {
       @Body() booksFulfilled: Array<{ book: BookID, shelf: ShelfId, numberOfBooks: number }>,
       @Request() request: KoaRequest
   ): Promise<void> {
-    const ctx = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
-    const warehouse = ctx.state.warehouse
+    const { warehouse } = request.ctx as ParameterizedContext<AppWarehouseDatabaseState, DefaultContext>
 
     const orderData = await warehouse.getOrder(order)
     if (orderData === false) {
